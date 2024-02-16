@@ -27,9 +27,6 @@ app.post('/signin', (req, res) => {
     db.select('email', 'hash').from('login')
     .where('email', '=', req.body.email)
     .then(data => {
-        if (data.length === 0) {
-            return res.status(400).json('Wrong credentials');
-        }
         const isValid = bcrypt.compareSync(req.body.password, data[0].hash);
         if (isValid) {
             return db.select('*').from('users')
@@ -42,6 +39,7 @@ app.post('/signin', (req, res) => {
             res.status(400).json('Wrong credentials');
         }
     })
+    .catch(err => res.status(400).json('Wrong credentials'));
 });
 
 app.post('/register', (req, res) => {
